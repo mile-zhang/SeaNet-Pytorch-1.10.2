@@ -61,7 +61,7 @@ class Loss(nn.modules.loss._Loss):
         if args.precision == 'half': self.loss_module.half()
         if not args.cpu and args.n_GPUs > 1:
             self.loss_module = nn.DataParallel(
-                self.loss_module, range(args.n_GPUs)
+                self.loss_module, device_ids=[0]# range(args.n_GPUs) -> device_ids=[0]
             )
 
         if args.load != '.': self.load(ckp.dir, cpu=args.cpu)

@@ -9,14 +9,15 @@ class Model(nn.Module):
     def __init__(self, args, ckp):
         super(Model, self).__init__()
         print('Making model...')
-
+        #os.environ['CUDA_VISIBLE_DEVICES'] = '0' # Fix AssertionError: Invalid device id, Because colabe just one gpu , 0 = first gpu
+        
         self.scale = args.scale
         self.idx_scale = 0
         self.self_ensemble = args.self_ensemble
         self.chop = args.chop
         self.precision = args.precision
         self.cpu = args.cpu
-        self.device = torch.device('cpu' if args.cpu else 'cuda')
+        self.device = torch.device('cpu' if args.cpu else 'cuda') # torch.device('cpu' if args.cpu else 'cuda')
         self.n_GPUs = args.n_GPUs
         self.save_models = args.save_models
 
@@ -24,8 +25,8 @@ class Model(nn.Module):
         self.model = module.make_model(args).to(self.device)
         if args.precision == 'half': self.model.half()
 
-        if not args.cpu and args.n_GPUs > 1:
-            self.model = nn.DataParallel(self.model, range(args.n_GPUs))
+        if not args.cpu and args.n_GPUs > 1:   # if not args.cpu and args.n_GPUs > 1: -> if not args.cpu:
+            self.model = nn.DataParallel(self.model, device_ids=[0]) # range(args.n_GPUs) -> device_ids=[0]
 
         self.load(
             ckp.dir,

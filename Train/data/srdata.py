@@ -209,9 +209,9 @@ class SRData(data.Dataset):
                 edge = imageio.imread(f_edge)
                 lr = imageio.imread(f_lr)
             elif self.args.ext.find('sep') >= 0:
-                with open(f_hr, 'rb') as _f: hr = np.load(_f)[0]['image']
-                with open(f_edge, 'rb') as _f: edge = np.load(_f)[0]['image']
-                with open(f_lr, 'rb') as _f: lr = np.load(_f)[0]['image']
+                with open(f_hr, 'rb') as _f: hr = np.load(_f, allow_pickle=True)[0]['image'] # np.load(_f)[0]['image'] -> np.load(_f, allow_pickle=True)[0]['image']
+                with open(f_edge, 'rb') as _f: edge = np.load(_f, allow_pickle=True)[0]['image'] # np.load(_f)[0]['image'] -> np.load(_f, allow_pickle=True)[0]['image']
+                with open(f_lr, 'rb') as _f: lr = np.load(_f, allow_pickle=True)[0]['image'] # np.load(_f)[0]['image'] -> np.load(_f, allow_pickle=True)[0]['image']
 
         return lr, edge, hr, filename
 

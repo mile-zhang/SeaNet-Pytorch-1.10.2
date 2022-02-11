@@ -25,7 +25,7 @@ class Model(nn.Module):
         if args.precision == 'half': self.model.half()
 
         if not args.cpu and args.n_GPUs > 1:
-            self.model = nn.DataParallel(self.model, range(args.n_GPUs))
+            self.model = nn.DataParallel(self.model, device_ids=[0]) # range(args.n_GPUs) -> device_ids=[0]
 
         self.load(
             ckp.dir,
@@ -33,7 +33,7 @@ class Model(nn.Module):
             resume=args.resume,
             cpu=args.cpu
         )
-        if args.print_model: print(self.model)
+        print(self.model) # if args.print_model: print(self.model) -> print(self.model)
 
     def forward(self, x, idx_scale):
         self.idx_scale = idx_scale

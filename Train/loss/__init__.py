@@ -59,10 +59,11 @@ class Loss(nn.modules.loss._Loss):
         device = torch.device('cpu' if args.cpu else 'cuda')
         self.loss_module.to(device)
         if args.precision == 'half': self.loss_module.half()
-        if not args.cpu and args.n_GPUs > 1:
-            self.loss_module = nn.DataParallel(
-                self.loss_module, range(args.n_GPUs)
-            )
+        # multi gpu need "nn.DataParallel"
+        # if not args.cpu and args.n_GPUs > 1: # if not args.cpu and args.n_GPUs > 1: -> if not args.cpu: 
+        #     self.loss_module = nn.DataParallel(
+        #         self.loss_module, device_ids=[0] # range(args.n_GPUs) -> device_ids=[0]
+        #     ) 
 
         if args.load != '.': self.load(ckp.dir, cpu=args.cpu)
 
@@ -117,10 +118,11 @@ class Loss(nn.modules.loss._Loss):
             plt.close(fig)
 
     def get_loss_module(self):
-        if self.n_GPUs == 1:
-            return self.loss_module
-        else:
-            return self.loss_module.module
+        # if self.n_GPUs == 1: # one gpu 
+        #     return self.loss_module
+        # else:
+            # return self.loss_module.module
+        return self.loss_module
 
     def save(self, apath):
         torch.save(self.state_dict(), os.path.join(apath, 'loss.pt'))
