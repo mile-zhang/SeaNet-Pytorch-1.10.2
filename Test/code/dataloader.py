@@ -12,7 +12,7 @@ import torch.multiprocessing as multiprocessing
 from torch._C import _set_worker_signal_handlers
 from torch.utils.data import _utils #new 
 from torch.utils.data.dataloader import DataLoader
-from torch.utils.data.dataloader import _SingleProcessDataLoaderIter  # _DataLoaderIter -> _SingleProcessDataLoaderIter (pytorch >=1.4 ) 
+# from torch.utils.data.dataloader import _SingleProcessDataLoaderIter  # _DataLoaderIter deleted (pytorch >=1.4 ) 
 # from torch.utils.data.dataloader import _BaseDataLoaderIter #new 
 
 # from torch.utils.data.dataloader import ExceptionWrapper
@@ -57,7 +57,26 @@ def _ms_loop(dataset, index_queue, data_queue, collate_fn, scale, seed, init_fn,
         else:
             data_queue.put((idx, samples))
 
-class _MSDataLoaderIter(_SingleProcessDataLoaderIter): #_DataLoaderIter -> _SingleProcessDataLoaderIter
+class MSDataLoader(DataLoader): #DataLoader 
+    def __init__(
+        self, args, dataset, batch_size=1, shuffle=False,
+        sampler=None, batch_sampler=None,
+        collate_fn=default_collate, pin_memory=False, drop_last=False,
+        timeout=0, worker_init_fn=None):
+        
+        super(MSDataLoader, self).__init__(
+            dataset, batch_size=batch_size, shuffle=shuffle,
+            sampler=sampler, batch_sampler=batch_sampler,
+            num_workers=args.n_threads, collate_fn=collate_fn,
+            pin_memory=pin_memory, drop_last=drop_last,
+            timeout=timeout, worker_init_fn=worker_init_fn)
+
+        self.scale = args.scale
+
+    def __iter__(self):
+        return _BaseDataLoaderIter(self)            
+            
+class _BaseDataLoaderIter(object): #class _MSDataLoaderIter(_DataLoaderIter): -> class _BaseDataLoaderIter(object)
     def __init__(self, loader):
         self.dataset = loader.dataset
         self.scale = loader.scale
@@ -69,7 +88,7 @@ class _MSDataLoaderIter(_SingleProcessDataLoaderIter): #_DataLoaderIter -> _Sing
         self.done_event = threading.Event()
 
         self.sample_iter = iter(self.batch_sampler)
-
+        # num_workers = 要用於數據加載的子進程數，0代表單線程
         if self.num_workers > 0:
             self.worker_init_fn = loader.worker_init_fn
             self.index_queues = [
@@ -128,33 +147,14 @@ class _MSDataLoaderIter(_SingleProcessDataLoaderIter): #_DataLoaderIter -> _Sing
             for _ in range(2 * self.num_workers):
                 self._put_indices()
 
-# class MSDataLoader(DataLoader): #DataLoader 
-#     def __init__(
-#         self, args, dataset, batch_size=1, shuffle=False,
-#         sampler=None, batch_sampler=None,
-#         collate_fn=default_collate, pin_memory=False, drop_last=False,
-#         timeout=0, worker_init_fn=None):
-        
-#         super(MSDataLoader, self).__init__(
-#             dataset, batch_size=batch_size, shuffle=shuffle,
-#             sampler=sampler, batch_sampler=batch_sampler,
-#             num_workers=args.n_threads, collate_fn=collate_fn,
-#             pin_memory=pin_memory, drop_last=drop_last,
-#             timeout=timeout, worker_init_fn=worker_init_fn)
-
-#         self.scale = args.scale
-
-#     def __iter__(self):
-#         return _MSDataLoaderIter(self)
-
-
-class MSDataLoader(DataLoader):
-    def __iter__(self) -> '_BaseDataLoaderIter':
+# new add
+    def _get_iterator(self) -> '_BaseDataLoaderIter':
         if self.num_workers == 0:
             return _SingleProcessDataLoaderIter(self)
         else:
+            self.check_worker_number_rationality()
             return _MultiProcessingDataLoaderIter(self)
-
+# new add         
 class _SingleProcessDataLoaderIter(_BaseDataLoaderIter):
     def __init__(self, loader):
         super(_SingleProcessDataLoaderIter, self).__init__(loader)
@@ -164,18 +164,9 @@ class _SingleProcessDataLoaderIter(_BaseDataLoaderIter):
         self._dataset_fetcher = _DatasetKind.create_fetcher(
             self._dataset_kind, self._dataset, self._auto_collation, self._collate_fn, self._drop_last)
 
-# class _BaseDataLoaderIter(object):
-#     def __init__(self, loader):
-#         self._dataset = loader.dataset
-#         self._dataset_kind = loader._dataset_kind
-#         self._IterableDataset_len_called = loader._IterableDataset_len_called
-#         self._auto_collation = loader._auto_collation
-#         self._drop_last = loader.drop_last
-#         self._index_sampler = loader._index_sampler
-#         self._num_workers = loader.num_workers
-#         self._pin_memory = loader.pin_memory and torch.cuda.is_available()
-#         self._timeout = loader.timeout
-#         self._collate_fn = loader.collate_fn
-#         self._sampler_iter = iter(self._index_sampler)
-#         self._base_seed = torch.empty((), dtype=torch.int64).random_().item()
-#         self._num_yielded = 0
+    def _next_data(self):
+        index = self._next_index()  # may raise StopIteration
+        data = self._dataset_fetcher.fetch(index)  # may raise StopIteration
+        if self._pin_memory:
+            data = _utils.pin_memory.pin_memory(data)
+        return data
