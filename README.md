@@ -1,20 +1,20 @@
-# SeaNet-PyTorch
-### This repository is an official PyTorch implementation of the paper "Soft-edge Assisted Network for Single Image Super-Resolution". (TIP 2020)
+# SeaNet-PyTorch-1.0.0 (change from <a href="https://github.com/MIVRC/SeaNet-PyTorch">MIVRC/SeaNet-PyTorch</a> )
+
+<a href="https://colab.research.google.com/drive/1XgHGr7e6aBbKNLZYbi02d10s4zyNSU-H#scrollTo=yRfRjleTPRsN"><img src="https://colab.research.google.com/assets/colab-badge.svg" alt="google colab logo"></a>
+
+This repository is an official PyTorch implementation of the paper "Soft-edge Assisted Network for Single Image Super-Resolution". (TIP 2020)
 
 Paper can be download from <a href="https://ieeexplore.ieee.org/abstract/document/9007623">SeaNet</a> 
 
 Homepage: <a href="https://junchenglee.com/projects/TIP2020_SEANET/">SeaNet</a> 
 
-The task of single image super-resolution (SISR) is a highly ill-posed inverse problem since reconstructing the highfrequency details from a low-resolution image is challenging. Most previous CNN-based super-resolution (SR) methods tend to directly learn the mapping from the low-resolution image to the high-resolution image through some complex convolutional neural networks. However, the method of blindly increasing the depth of the network is not the best choice because the performance improvement of such methods is marginal but the computational cost is huge. A more efficient method is to integrate the image prior knowledge into the model to assist the image reconstruction. Indeed, the soft-edge has been widely applied in many computer vision tasks as the role of an important
-image feature. In this paper, we propose a Soft-edge assisted Network (SeaNet) to reconstruct the high-quality SR image with the help of image soft-edge. The proposed SeaNet consists of three sub-nets: a rough image reconstruction network (RIRN), a soft-edge reconstruction network (Edge-Net), and an image refinement network (IRN). The complete reconstruction process consists of two stages. In Stage-I, the rough SR feature maps and the SR soft-edge are reconstructed by the RIRN and Edge-Net, respectively. In Stage-II, the outputs of the previous stages are fused and then fed to the IRN for high-quality SR image reconstruction. Extensive experiments show that our SeaNet converges rapidly and achieves excellent performance under the assistance of image soft-edge. 
-
 <p align="center">
 
-<img src="images/EdgeNet.png" width="800px"/> 
+<img src="https://junchenglee.com/projects/TIP2020_SEANET/SeaNet.png" width="800px"/> 
 
 </p>
 
-###SEAN is another name for SeaNet, which is convenient for us to conduct experiments.
+🎯SEAN🎯 is another name for SeaNet, which is convenient for us to conduct experiments.
 
 All reconstructed SR images can be download from <a href="https://www.jianguoyun.com/p/DaKOxvEQ19ySBxi_1o4B">SR_Images</a> 
 
@@ -22,21 +22,23 @@ All test datasets (Preprocessed HR images) can be downloaded from <a href="https
 
 All original test datasets (HR images) can be downloaded from <a href="https://www.jianguoyun.com/p/DaSU0L4Q19ySBxi_qJAB">here</a>.
 
-## Prerequisites:
+## Requirement:
 
-1. Python 3.6
+1. Python==3.7
 
-2. PyTorch >= 0.4.0
+2. PyTorch==1.0.0
 
-3. numpy
+3. torchvision==0.2.2
 
-4. skimage
+4. numpy==1.19.5
 
-5. imageio
+5. scikit-image==0.18.3
 
-6. matplotlib
+6. imageio==2.4.1
 
-7. tqdm
+7. matplotlib==3.2.2
+
+8. tqdm==4.62.3
 
 For more informaiton, please refer to <a href="https://github.com/thstkdgus35/EDSR-PyTorch">EDSR</a> and <a href="https://github.com/yulunzhang/RCAN">RCAN</a>.
 
@@ -130,13 +132,19 @@ We use  Test/PSNR_SSIM_Results_BI_model.txt for PSRN/SSIM test.
 
 </p>
 
+<p align="center">
+
 <img src="images/TABLE3.png" width="800px"/> 
 
 </p>
 
+<p align="center">
+
 <img src="images/results1.png" width="800px"/> 
 
 </p>
+
+<p align="center">
 
 <img src="images/results2.png" width="800px"/> 
 
@@ -144,7 +152,9 @@ We use  Test/PSNR_SSIM_Results_BI_model.txt for PSRN/SSIM test.
 
 Training curves:
 
-<img src="images/loss_L1_x2.png" width="235px"/><img src="images/loss_L1_x3.png" width="235px" /> <img src="images/loss_L1_x4.png" width="235px"/> 
+<p align="center">
+
+<img src="images/loss_L1_x2.png" width="235px"/> <img src="images/loss_L1_x3.png" width="235px" /> <img src="images/loss_L1_x4.png" width="235px"/> 
 
 </p>
 
