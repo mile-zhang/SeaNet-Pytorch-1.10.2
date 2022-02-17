@@ -24,21 +24,21 @@ All original test datasets (HR images) can be downloaded from <a href="https://w
 
 ## Requirement:
 
-1. Python==3.7
+1. Python==3.8.6
 
-2. PyTorch==1.0.0
+2. PyTorch==1.7.0
 
-3. torchvision==0.2.2
+3. torchvision==0.8.0
 
-4. numpy==1.19.5
+4. numpy==1.19.4
 
-5. scikit-image==0.18.3
+5. scikit-image==0.18.1
 
-6. imageio==2.4.1
+6. imageio==2.9.0
 
-7. matplotlib==3.2.2
+7. matplotlib==3.3.3
 
-8. tqdm==4.62.3
+8. tqdm==4.54.1
 
 For more informaiton, please refer to <a href="https://github.com/thstkdgus35/EDSR-PyTorch">EDSR</a> and <a href="https://github.com/yulunzhang/RCAN">RCAN</a>.
 
@@ -183,4 +183,4 @@ This work was completed in 2018, a long time ago, so there may be omissions in t
 
 
 This implementation is for non-commercial research use only. 
-If you find this code useful in your research, please cite the above papers.
+If you find this code useful in your research, please cite the above paperso.
